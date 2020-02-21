@@ -9,18 +9,16 @@ namespace TreeStructure.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int ParentID { get; set; }
-        public List<Category> Categories = new List<Category>();
+        public int? ParentID { get; set; }
+        public List<Category> ChildCategories = new List<Category>();
 
         public Category() { }
 
         public bool HasChildren()
         {
-            if (this.Categories.Count > 0)
+            if (this.ChildCategories.Count > 0)
                 return true;
             return false;
         }
-
-
     }
 }

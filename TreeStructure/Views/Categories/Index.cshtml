@@ -1,0 +1,49 @@
+﻿@model IEnumerable<TreeStructure.Models.Category>
+@inject TreeStructure.Infrastructure.CategoriesContext _context
+@{
+    ViewData["Title"] = "View";
+}
+
+<h1>View</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+@*<table class="table">*@
+@*<thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>*@
+
+@foreach (var item in Model.ToList())
+{
+    var categoryChildren = _context.CategoryItems.Where(c => c.ParentID == item.Id).ToList();
+    item.ChildCategories = categoryChildren;
+    <ul>
+        <li>
+            @Html.DisplayFor(modelItem => item.Name)
+            @if (item.HasChildren())
+            {
+                foreach (var child in item.ChildCategories)
+                {
+
+                    <ol>
+                        <li>@Html.DisplayFor(childItem => child.Name)</li>
+                    </ol>
+                }
+            }
+
+        </li>
+        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+        <a asp-action="Move" asp-route-id="@item.Id">Move node</a> |
+        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+        <a asp-action="AddChild" asp-route-id="@item.Id">Add Node</a> |
+
+    </ul>
+}
+@*</tbody>
+    </table>*@
