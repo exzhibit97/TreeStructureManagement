@@ -13,7 +13,7 @@ namespace TreeStructureTests
             Category category = new Category
             {
                 Name = "MainCategory",
-                Categories = { new Category(), new Category() }
+                Children = { new Category(), new Category() }
             };
             
             //Act
@@ -30,7 +30,7 @@ namespace TreeStructureTests
             Category category = new Category
             {
                 Name = "MainCategory",
-                Categories = { }
+                Children = { }
             };
 
             //Act

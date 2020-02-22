@@ -1,0 +1,15 @@
+﻿@model TreeStructure.ViewModels.CategoryTreeViewModel
+
+@foreach (var category in Model.Categories)
+{
+    <li>@category.Name</li>
+
+    if (category.Children != null)
+    {
+        @await Component.InvokeAsync("CategoriesStructure", new { categories = category.Children, isFirstCall = false})
+    }
+}
+
+
+
+

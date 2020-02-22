@@ -10,16 +10,20 @@ namespace TreeStructure.Controllers
 {
     public class CategoriesController : Controller
     {
+        private readonly CategoriesService _service;
         private readonly CategoriesContext _context;
 
-        public CategoriesController(CategoriesContext context)
+        public CategoriesController(CategoriesService service, CategoriesContext context)
         {
+            _service = service;
             _context = context;
         }
         public IActionResult Index()
         {
-            var categoryItems = _context.CategoryItems;
-            return View(categoryItems);
+            //var categoryItems = _context.CategoryItems.ToList();
+            //var tree = TreeBuilder.BuildTree(categoryItems);
+            var categoryTree = _service.GetCategoryTree();
+            return View(categoryTree);
         }
 
         public IActionResult Create()
@@ -77,7 +81,7 @@ namespace TreeStructure.Controllers
                 ParentID = id
             };
 
-            parentCategory.ChildCategories.Add(childCategory);
+            parentCategory.Children.Add(childCategory);
 
             _context.CategoryItems.Add(childCategory);
             _context.SaveChanges();

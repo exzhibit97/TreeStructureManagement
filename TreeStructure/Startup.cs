@@ -26,7 +26,7 @@ namespace TreeStructure
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContextPool<CategoriesContext>(options => options.UseSqlServer(Configuration.GetConnectionString("TreeStructureConnection")));
-
+            services.AddTransient<CategoriesService>();
             services.AddControllersWithViews();
         }
 

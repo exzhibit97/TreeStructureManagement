@@ -18,32 +18,61 @@
             <th></th>
         </tr>
     </thead>*@
-
-@foreach (var item in Model.ToList())
-{
-    var categoryChildren = _context.CategoryItems.Where(c => c.ParentID == item.Id).ToList();
-    item.ChildCategories = categoryChildren;
-    <ul>
+@*@foreach (var item in Model.ToList())
+    {
+        //var tree = TreeBuilder.BuildTree(Model.ToList());
         <li>
             @Html.DisplayFor(modelItem => item.Name)
-            @if (item.HasChildren())
-            {
-                foreach (var child in item.ChildCategories)
+            <span>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="AddChild" asp-route-id="@item.Id">Add Node</a> |
+                <a asp-action="Move" asp-route-id="@item.Id">Move node</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+            </span>
+            <ul>
+                @if (item.HasChildren())
                 {
-
-                    <ol>
-                        <li>@Html.DisplayFor(childItem => child.Name)</li>
-                    </ol>
+                    @foreach (var child in item.Children)
+                    {
+                        <li>@Html.DisplayFor(modelItem => child.Name) <span><a asp-action="AddChild" asp-route-id="@child.Id">Add Node</a></span></li>
+                    }
                 }
-            }
-
-        </li>
+            </ul>
+        </li>*@
+@await Component.InvokeAsync("CategoriesStructure", new { isFirstCall = true })
+@*<li>
         <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
         <a asp-action="Move" asp-route-id="@item.Id">Move node</a> |
         <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
         <a asp-action="AddChild" asp-route-id="@item.Id">Add Node</a> |
-
-    </ul>
+    </li>*@
 }
+
+@*@foreach (var item in Model.Children.ToList())
+    {
+        var categoryChildren = _context.CategoryItems.Where(c => c.ParentID == item.Id).ToList();
+        item.Children = categoryChildren;
+        <ul>
+            <li>
+                @Html.DisplayFor(modelItem => item.Name)
+                @if (item.HasChildren())
+                {
+                    foreach (var child in item.Children)
+                    {
+
+                        <ol>
+                            <li>@Html.DisplayFor(childItem => child.Name)</li>
+                        </ol>
+                    }
+                }
+
+            </li>
+            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+            <a asp-action="Move" asp-route-id="@item.Id">Move node</a> |
+            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+            <a asp-action="AddChild" asp-route-id="@item.Id">Add Node</a> |
+
+        </ul>
+    }*@
 @*</tbody>
     </table>*@

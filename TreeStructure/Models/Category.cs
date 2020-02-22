@@ -10,13 +10,14 @@ namespace TreeStructure.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public int? ParentID { get; set; }
-        public List<Category> ChildCategories = new List<Category>();
+        public Category Parent { get; set; }
+        public List<Category> Children { get; set; } = new List<Category>();
 
         public Category() { }
 
         public bool HasChildren()
         {
-            if (this.ChildCategories.Count > 0)
+            if (this.Children.Count > 0)
                 return true;
             return false;
         }
