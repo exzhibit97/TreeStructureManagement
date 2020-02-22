@@ -24,7 +24,7 @@ namespace TreeStructure.ViewComponents
                 categories = _service.GetCategoryTree();
 
             var viewModel = new CategoryTreeViewModel { IsFirstCall = isFirstCall, Categories = categories };
-
+            //something is not going right and I needed to explicitly state return type here.
             return Task.FromResult<IViewComponentResult>(View(viewModel)); 
         }
     }

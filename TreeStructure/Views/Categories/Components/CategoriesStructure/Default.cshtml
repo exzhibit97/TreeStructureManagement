@@ -2,12 +2,23 @@
 
 @foreach (var category in Model.Categories)
 {
-    <li>@category.Name</li>
+    <li>
+        @category.Name
+        <span class="toggle">
+            <a asp-action="Edit" asp-route-id="@category.Id">Edit</a> |
+            <a asp-action="Move" asp-route-id="@category.Id">Move node</a> |
+            <a asp-action="Delete" asp-route-id="@category.Id">Delete</a> |
+            <a asp-action="AddChild" asp-route-id="@category.Id">Add Node</a> |
+        </span>
+    </li>
 
-    if (category.Children != null)
+    if (category.HasChildren())
     {
-        @await Component.InvokeAsync("CategoriesStructure", new { categories = category.Children, isFirstCall = false})
+        <ul>
+            @await Component.InvokeAsync("CategoriesStructure", new { categories = category.Children, isFirstCall = false })
+        </ul>
     }
+
 }
 
 
