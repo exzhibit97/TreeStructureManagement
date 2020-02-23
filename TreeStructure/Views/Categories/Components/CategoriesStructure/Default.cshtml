@@ -2,25 +2,34 @@
 
 @foreach (var category in Model.Categories)
 {
+    var toggleableID = $"toggle{category.Id}";
+
+
+
     <li>
         @category.Name
-        <span class="toggle">
+
+        @*<span id="@toggleableID" class="toggleableHidden">
             <a asp-action="Edit" asp-route-id="@category.Id">Edit</a> |
             <a asp-action="Move" asp-route-id="@category.Id">Move node</a> |
             <a asp-action="Delete" asp-route-id="@category.Id">Delete</a> |
-            <a asp-action="AddChild" asp-route-id="@category.Id">Add Node</a> |
-        </span>
+            <a asp-action="Create" asp-route-id="@category.Id">Add Node</a> |
+        </span>*@
+
+        <ul>
+            @if (category.HasChildren())
+            {
+
+                @await Component.InvokeAsync("CategoriesStructure", new { categories = category.Children, isFirstCall = false })
+            }
+        </ul>
+
+
+        @*<span class="options hidden">
+            <a asp-action="Create" asp-route-id="@category.Id">Add Node</a> |
+            <a asp-action="Edit" asp-route-id="@category.Id">Edit</a> |
+            <a asp-action="Delete" asp-route-id="@category.Id">Delete</a>
+        </span>*@
     </li>
 
-    if (category.HasChildren())
-    {
-        <ul>
-            @await Component.InvokeAsync("CategoriesStructure", new { categories = category.Children, isFirstCall = false })
-        </ul>
-    }
-
 }
-
-
-
-

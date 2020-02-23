@@ -5,10 +5,38 @@
 }
 
 <h1>View</h1>
-
+<button id="buttonix" class="btn-primary">Click me!</button>
 <p>
     <a asp-action="Create">Create new under Root</a>
 </p>
 
-@await Component.InvokeAsync("CategoriesStructure", new { isFirstCall = true })
+<ul class="collapsibleList">
+        @await Component.InvokeAsync("CategoriesStructure", new { isFirstCall = true })
+</ul>
 
+@section scripts {
+    <script type="text/javascript">
+        document.querySelectorAll(".wholeNode").forEach(box =>
+            box.addEventListener("click", function (event) {
+                box.addEventListener("mouseover", function () {
+                    box.children[1].classList.remove("hidden");
+                });
+                box.addEventListener("mouseout", function () {
+                    box.children[1].classList.add("hidden");
+                });
+            }));
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('li').on('click', function (e) {
+                if ($(e.target).children('ul').is(':visible')) {
+                    $(e.target).children('ul').slideToggle().toggleClass('closed');
+                }
+                else
+                    $(e.target).children('ul').slideToggle().toggleClass('opened');
+                e.stopPropagation();
+            });
+        });
+    </script>
+
+}

@@ -11,17 +11,14 @@ namespace TreeStructure.Controllers
     public class CategoriesController : Controller
     {
         private readonly CategoriesService _service;
-        private readonly CategoriesContext _context;
 
-        public CategoriesController(CategoriesService service, CategoriesContext context)
+        public CategoriesController(CategoriesService service)
         {
             _service = service;
-            _context = context;
         }
+
         public IActionResult Index()
         {
-            //var categoryItems = _context.CategoryItems.ToList();
-            //var tree = TreeBuilder.BuildTree(categoryItems);
             var categoryTree = _service.GetCategoryTree();
             return View(categoryTree);
         }
@@ -32,7 +29,7 @@ namespace TreeStructure.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] Category category, int id)
+        public IActionResult Create([FromForm] Category category, int? id)
         {
             if (!ModelState.IsValid)
             {
@@ -44,49 +41,33 @@ namespace TreeStructure.Controllers
                 Name = category.Name,
                 ParentID = id,
             };
-            _context.CategoryItems.Add(category);
-            _context.SaveChanges();
+            _service.AddNode(categoryToAdd);
             return RedirectToAction("Index");
         }
 
-        public IActionResult AddChild(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var category = _context.CategoryItems.Find(id);
-            
+            var category = _service.GetById((int)id);
+
             if (category == null)
             {
                 return NotFound();
             }
 
-            return View();
+            return View(category);
         }
 
-        [HttpPost]
-        public IActionResult AddChild([FromForm] Category category, int id)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(category);
-            }
+        [HttpPost]        
+        public IActionResult Delete(Category category)
+        {   
+            _service.Delete(category);
 
-            var parentCategory = _context.CategoryItems.Find(id);
-            var childCategory = new Category
-            {
-                Name = category.Name,
-                ParentID = id
-            };
-
-            parentCategory.Children.Add(childCategory);
-
-            _context.CategoryItems.Add(childCategory);
-            _context.SaveChanges();
-
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
     }
 }
