@@ -112,9 +112,9 @@ body {
     visibility: hidden;
 }
 
-/*.wholeNode {
-    height: 35px;
-}*/
+.wholeNode {
+   
+}
 
 .closed {
     background-position: left top;

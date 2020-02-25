@@ -23,13 +23,19 @@ namespace TreeStructure.Controllers
             return View(categoryTree);
         }
 
+        
+        public IActionResult modalpartial()
+        {
+            return PartialView();
+        }
+
         public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] Category category, int? id)
+        public IActionResult Create([FromBody] Category category, int? id)
         {
             if (!ModelState.IsValid)
             {
@@ -39,10 +45,11 @@ namespace TreeStructure.Controllers
             var categoryToAdd = new Category
             {
                 Name = category.Name,
-                ParentID = id,
+                ParentID = category.ParentID,
             };
             _service.AddNode(categoryToAdd);
-            return RedirectToAction("Index");
+            return new JsonResult(categoryToAdd);
+            //return RedirectToAction("Index");
         }
 
         public IActionResult Delete(int? id)
@@ -67,7 +74,8 @@ namespace TreeStructure.Controllers
         {   
             _service.Delete(category);
 
-            return RedirectToAction(nameof(Index));
+            //return RedirectToAction(nameof(Index));
+            return new JsonResult(category);
         }
     }
 }

@@ -4,39 +4,150 @@
     ViewData["Title"] = "View";
 }
 
+
 <h1>View</h1>
-<button id="buttonix" class="btn-primary">Click me!</button>
+<button id="collapse" class="btn-primary">Collapse all</button>
 <p>
     <a asp-action="Create">Create new under Root</a>
 </p>
 
-<ul class="collapsibleList">
-        @await Component.InvokeAsync("CategoriesStructure", new { isFirstCall = true })
+<ul id="collapsibleList">
+    @await Component.InvokeAsync("CategoriesStructure", new { isFirstCall = true })
 </ul>
 
 @section scripts {
-    <script type="text/javascript">
-        document.querySelectorAll(".wholeNode").forEach(box =>
-            box.addEventListener("click", function (event) {
-                box.addEventListener("mouseover", function () {
-                    box.children[1].classList.remove("hidden");
+    <script>
+        $(document).ready(function () {
+            $('.btn-block').click(function () {
+                var url = $('#myModal').data('url');
+                $.get(url, function (data) {
+                    $('#myModal').html(data);
+                    $('#myModal').modal('show');
                 });
-                box.addEventListener("mouseout", function () {
-                    box.children[1].classList.add("hidden");
-                });
-            }));
+            });
+        });
     </script>
+
+    <script>
+        var listItem = $(".menu");
+        var x = false;
+        listItem.click(function () {
+            $(this).parent('li').children('.options').toggleClass("visible");
+            listItem.not(this).parent('li').children('.options').removeClass("visible");
+            x = !x;
+
+            var listItemCurrent = $(this).parent('li').children('.menu');
+            var currentMenu = $(this).parent('li').children('.options');
+        });
+    </script>
+
     <script type="text/javascript">
         $(document).ready(function () {
-            $('li').on('click', function (e) {
-                if ($(e.target).children('ul').is(':visible')) {
-                    $(e.target).children('ul').slideToggle().toggleClass('closed');
+            $('li').children('i').text("-");
+            $('li a').on('click', function (e) {
+                if ($(e.target).parent('li').children('ul').is(':visible')) {
+                    $(e.target).parent('li').children('ul').slideToggle();
+                    $(e.target).parent('li').children('i').text("+");
                 }
-                else
-                    $(e.target).children('ul').slideToggle().toggleClass('opened');
+                else {
+                    $(e.target).parent('li').children('ul').slideToggle();
+                    $(e.target).parent('li').children('i').text("-");
+                }
                 e.stopPropagation();
             });
         });
+    </script>
+    <script>
+        document.getElementById("collapse").addEventListener("click", function (e) {
+
+            $('#collapsibleList ul').slideToggle();
+            $('#collapsibleList').toggleClass('closed');
+
+            if ($('#collapsibleList').hasClass('closed')) {
+                $('#collapsibleList i').text('+');
+                $('#collapsibleList ul').children('ul').slideToggle();
+            } else {
+                $('#collapsibleList i').text('-');
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('.render').on('click', function (e) {
+                var unorderedList = $(e.target).parent('.options').siblings('ul');
+                unorderedList.append('<form><input id="name" type="text" name="categoryName"><input type="submit" id="btn-submit" value="Submit"></form>');
+                $('#btn-submit').on('click', function (e) {
+                    e.preventDefault();
+                    var strId = $('#btn-submit').parent('form').parent('ul').siblings('span').children('.render').attr('id');
+                    var id = parseInt(strId);
+                    //console.log(id);
+                    var obj = Add(id, e);
+                    //unorderedList.append('<li class=wholeNode><a>'+obj.Name+'</a><span class="menu"> =&gt;</span><span class="options hidden">'+
+                    //             '<a href="/Categories/Create/'+obj.ID+'">Add Node</a> |'+
+                    //             '<a href="/Categories/Edit/'+obj.ID+'">Edit</a> |'+
+                    //             '<a href="/Categories/Delete/'+obj.ID+'">Delete</a>'+
+                    //             '<button type="button" class="btn btn-primary" id="btnAdd" onclick="Delete('+obj.ID+')">Delete</button>'+
+                    //             '<button type="button" class="render" id="'+obj.ID+'">Add node</button></span></li>');
+                    $('form').detach();
+                })
+            });
+        });
+        
+
+        function Delete(ID) {            
+            $.ajax({
+                url: "/Categories/Delete/" + ID,
+                type: "POST",
+                contentType: "application/json;charset=UTF-8",
+                dataType: "json",
+                success: function (data) {
+                    console.log(data.id);
+                    $('#li-' + data.id).detach();
+                },
+                error: function (errormessage) {
+                    console.log(errormessage.responseText);
+                }
+            });
+        }
+
+        function Add(id, event) {
+            var ev = event;
+            var categoryObj = {                
+                Name: $('#name').val(),    
+                ParentID: id,
+            };            
+            $.ajax({
+                url: "/Categories/Create",
+                data: JSON.stringify(categoryObj),
+                type: "POST",
+                contentType: "application/json:charset=UTF-8",
+                dataType: "json",
+                success: function (data) {
+                    //var unorderedList = $(target).parent('.options').siblings('ul');
+                    var parentListId = data.parentID;                                      
+                    $('#ul-'+parseInt(parentListId)).append('<li class=wholeNode><a>'+data.name+'</a><span class="menu"> =&gt;</span><span class="options hidden">'+
+                                 '<a href="/Categories/Create/'+data.id+'">Add Node</a> |'+
+                                 '<a href="/Categories/Edit/'+data.id+'">Edit</a> |'+
+                                 '<a href="/Categories/Delete/'+data.id+'">Delete</a>'+
+                                 '<button type="button" class="btn btn-primary" id="btnAdd" onclick="Delete('+data.id+')">Delete</button>'+
+                                 '<button type="button" class="render" id="'+data.id+'">Add node</button></span></li>');
+                    console.log(data);
+
+                    //loadData();
+                },                
+                error: function (data) {
+                    console.log("error"+data);
+                    //console.log(errormessage.responseText);
+                }
+            });
+            return this.data;
+        }
+
+        function Append(obj) {
+            var unorderedList = $(e.target).parent('.options').siblings('ul');
+            console.log(this);
+                unorderedList.append('<li class=wholeNode><a>${obj.Name}</a></li>');
+        }
     </script>
 
 }
