@@ -23,59 +23,51 @@ namespace TreeStructure.Controllers
             return View(categoryTree);
         }
 
-        
-        public IActionResult modalpartial()
-        {
-            return PartialView();
-        }
-
-        public IActionResult Create()
-        {
-            return View();
-        }
-
         [HttpPost]
-        public IActionResult Create([FromBody] Category category, int? id)
+        public IActionResult Create([FromBody] Category category)
         {
             if (!ModelState.IsValid)
             {
                 return View(category);
             }
-
-            var categoryToAdd = new Category
+            try
             {
-                Name = category.Name,
-                ParentID = category.ParentID,
-            };
-            _service.AddNode(categoryToAdd);
-            return new JsonResult(categoryToAdd);
-            //return RedirectToAction("Index");
+                var categoryToAdd = new Category
+                {
+                    Name = category.Name,
+                    ParentID = category.ParentID,
+                };
+
+                _service.AddNode(categoryToAdd);
+                return new JsonResult(categoryToAdd);
+            }
+            catch (Exception ex)
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        public IActionResult Delete(int? id)
+        public IActionResult Delete(int Id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
+                var category = _service.GetById(Id);
+                /*Deletes only parent, orphaned children get connected to parent's parent
+                _service.Delete(category);
+                */
+
+                //Deletes parent and his children - i.e cascade delete
+                _service.DeleteWithChildren(category);
+
+                //Deletes parent and sets its children to be descendants of its parent
+                //_service.DeleteWithForcedAdoption(category);
+
+                return Ok();
             }
-
-            var category = _service.GetById((int)id);
-
-            if (category == null)
+            catch (Exception ex)
             {
-                return NotFound();
+                return BadRequest();
             }
-
-            return View(category);
-        }
-
-        [HttpPost]        
-        public IActionResult Delete(Category category)
-        {   
-            _service.Delete(category);
-
-            //return RedirectToAction(nameof(Index));
-            return new JsonResult(category);
         }
     }
 }

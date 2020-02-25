@@ -7,7 +7,7 @@
             <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header">  
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="myModalLabel">Warning</h4>
                 </div>
@@ -33,7 +33,7 @@
         var bodyMessage = $(target).data('body-message');
         redirectUrl = $(target).data('redirect-url');
 
-        url = "/" + controller + "/" + action + "?Id=" + Id;
+        url = "/" + controller + "/" + action + "/" + Id;
         $(".delete-modal-body").text(bodyMessage);
         $("#deleteModal").modal('show');
     });
@@ -41,15 +41,15 @@
     $("#confirm-delete").on('click', () => {
         $.get(url)
             .done((result) => {
-                swal("Success", "Node has been removed!", "success");
-
+                console.log("Success", "Node has been removed!", "success");
+    
                 if (!redirectUrl) {
                     return $(target).parent().parent().hide("slow");
                 }
                 window.location.href = redirectUrl;
             })
             .fail((error) => {
-                swal("Error", "Node could not be removed!", "error");
+                console.log("Error", "Node could not be removed!", "error");
 
                 if (redirectUrl)
                     window.location.href = redirectUrl;

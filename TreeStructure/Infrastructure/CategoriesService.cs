@@ -24,7 +24,6 @@ namespace TreeStructure.Infrastructure
 
         public List<Category> GetCategoryTree()
         {
-
             var tree = _context.CategoryItems
                 .Include(c => c.Children)
                 .AsEnumerable()
@@ -52,5 +51,40 @@ namespace TreeStructure.Infrastructure
             _context.CategoryItems.Remove(category);
             _context.SaveChanges();
         }
+
+        public void DeleteWithChildren(Category category)
+        {
+            if (!category.HasChildren())
+            {
+                _context.CategoryItems.Remove(category);                
+            }
+            else
+            {
+                foreach (var children in category.Children)
+                {
+                    this.DeleteWithChildren(children);
+                }
+            }            
+            _context.SaveChanges();
+        }   
+        
+        public void DeleteWithForcedAdoption(Category category)
+        {
+            var catChildren = _context.CategoryItems.Include(c => c.Children).Where(i => i.ParentID == category.Id).ToList();
+            if (catChildren.Count() == 0)
+            {
+                _context.CategoryItems.Remove(category);
+            }
+            else
+            {
+                foreach (var children in catChildren)
+                {
+                    children.ParentID = category.ParentID;
+                }                
+            }
+            _context.CategoryItems.Remove(category);
+            _context.SaveChanges();
+        }
+
     }
 }

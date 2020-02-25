@@ -12,6 +12,8 @@ namespace TreeStructure.Infrastructure
         List<Category> GetCategoryTree();       
         Category AddNode(Category category);        
         void Update(Category category);
+        void DeleteWithForcedAdoption(Category category);
+        void DeleteWithChildren(Category category);
         void Delete(Category category);
     }
 }
