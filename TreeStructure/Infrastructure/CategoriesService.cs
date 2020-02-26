@@ -16,10 +16,14 @@ namespace TreeStructure.Infrastructure
         {
             _context = context;
         }
+        public List<Category> GetAll()
+        {
+            return _context.CategoryItems.ToList();
+        }
 
         public Category GetById(int id)
         {
-            return _context.CategoryItems.SingleOrDefault(c => c.Id == id);
+            return _context.CategoryItems.Where(c => c.Id == id).AsNoTracking().FirstOrDefault();
         }
 
         public List<Category> GetCategoryTree()

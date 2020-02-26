@@ -1,28 +1,34 @@
 ﻿@model TreeStructure.Models.Category
 <!-- Modal -->
-<div class="modal fade" id="add-contact" tabindex="-1" role="dialog" aria-labelledby="addContactLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addContactLabel">Add contact</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">×</span>
-                </button>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            @Html.HiddenFor(model => model.Id)
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            <div class="modal-body">
-                <form asp-action="Category">
-                    <div class="form-group">
-                        <label asp-for="Name"></label>
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
-                    
-                </form>
-            </div>
+            @*<div class="form-group">
+                    <label asp-for="ParentID" class="control-label"></label>
+                    <input asp-for="ParentID" class="form-control" />
+                    <span asp-validation-for="ParentID" class="text-danger"></span>
+                </div>*@
+            @*@Html.DropDownListFor(model => model.Id, ViewBag.categoriesList as SelectList, "--Select--", new { @class="form-control"})*@
+            @Html.DisplayNameFor(model => model.ParentID)
+            @Html.DropDownListFor(model => model.ParentID, ViewBag.categoriesList as SelectList, "--Select--", new { @class = "form-control" })
+            @*@Html.DropDownList(ViewBag.categoriesList as SelectList, "--Select--")*@
+            @*<select asp-for="ParentID" asp-items="@(new SelectList(@ViewBag.categoriesList, "", "",  ))"></select>*@
+            @*@Html.DropDownListFor(model => model.ParentID, ViewBag.categoriesList as SelectList, "---Select Parent---", new { @id="DropDown", @class="form-control" })*@
+            <br />
+            @*<div class="form-group">
+                    <input type="submit" id="@Model.Id" value="Submit" class="btn btn-primary" />
+                </div>*@
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" data-save="modal">Save</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel-edit">Cancel</button>
+                <button type="submit" class="btn btn-danger" value="Submit">Edit</button>
             </div>
-        </div>
+        </form>
     </div>
 </div>

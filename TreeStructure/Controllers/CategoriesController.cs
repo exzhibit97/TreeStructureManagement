@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TreeStructure.Infrastructure;
 using TreeStructure.Models;
+using TreeStructure.ViewModels;
 
 namespace TreeStructure.Controllers
 {
@@ -47,11 +49,11 @@ namespace TreeStructure.Controllers
             }
         }
 
-        public IActionResult Delete(int Id)
+        public IActionResult Delete(int id)
         {
             try
             {
-                var category = _service.GetById(Id);
+                var category = _service.GetById(id);
                 /*Deletes only parent, orphaned children get connected to parent's parent
                 _service.Delete(category);
                 */
@@ -62,12 +64,46 @@ namespace TreeStructure.Controllers
                 //Deletes parent and sets its children to be descendants of its parent
                 //_service.DeleteWithForcedAdoption(category);
 
-                return Ok();
+                return Ok(category);
             }
             catch (Exception ex)
             {
                 return BadRequest();
             }
         }
+
+        public IActionResult Edit(Category category)
+        {
+            try
+            {
+                //var categoryTemp = _service.GetById(category.Id);
+                var categoryUpdated = new Category
+                {
+                    Id = category.Id,
+                    Name = category.Name,
+                    ParentID = category.ParentID,
+                };
+
+                _service.Update(categoryUpdated);
+
+                return RedirectToAction(nameof(Index));
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public IActionResult EditPartial(int id)
+        {            
+            var categories = _service.GetAll();
+            var category = _service.GetById(id);
+            ViewBag.catId = id;
+            ViewBag.categoriesList = new SelectList(categories, "Id", "Name");   
+
+            return PartialView("modalPartial", category);
+        }
     }
+
 }

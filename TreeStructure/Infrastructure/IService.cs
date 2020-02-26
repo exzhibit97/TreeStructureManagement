@@ -8,6 +8,7 @@ namespace TreeStructure.Infrastructure
 {
     public interface IService
     {
+        List<Category> GetAll();
         Category GetById(int id);
         List<Category> GetCategoryTree();       
         Category AddNode(Category category);        

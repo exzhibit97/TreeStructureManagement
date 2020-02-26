@@ -7,25 +7,30 @@
     <li id="@liId" class="wholeNode">
         @if (category.HasChildren())
         {
-            <i class="expandable">+</i>
+        <i class="expandable fas fa-chevron-down"></i>
         }
-        <a>@category.Name</a><span class="menu"> =></span>
-        <span class="options hidden">
-            @*<a asp-action="Create" asp-route-id="@category.Id">Add Node</a> |
-                <a asp-action="Edit" asp-route-id="@category.Id">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@category.Id">Delete</a>*@
-            @*<button type="button" class="btn btn-primary" id="btnAdd" onclick="Delete(@category.Id)">Delete</button>
-            <button type="button" class="btn btn-danger">Delete modal</button>*@
-            <a class="btn btn-danger delete"
-               data-id="@category.Id"
-               data-controller="Categories"
-               data-action="Delete"
-               data-body-message="Are you sure to delete this node?">
-                <i class="fas fa-trash alt"></i>
-                Delete
-            </a>
-            <a class="btn btn-primary render" id="@category.Id">Add node</a>
-        </span>
+        <a>@category.Name</a><span class="menu"><i class="fas fa-plus"></i></span>
+                             <span class="options hidden">
+                                 <a class="btn btn-danger delete"
+                                    data-id="@category.Id"
+                                    data-controller="Categories"
+                                    data-action="Delete"
+                                    data-body-message="Are you sure to delete this node?">
+                                     <i class="fas fa-trash alt"></i>
+                                     Delete
+                                 </a>
+                                 <a class="btn btn-secondary edit"
+                                    data-id="@category.Id"
+                                    data-controller="Categories"
+                                    data-action="Edit"
+                                    onclick="loadEdit(@category.Id)"
+                                    data-body-message="Are you sure to edit this node?">
+                                     <i class="fas fa-edit"></i>
+                                     Edit
+                                 </a>
+                                 <a class="btn btn-primary render" id="@category.Id"><i class="fas fa-plus"></i>Add node</a>
+                                 <button onclick="sortListDir(@category.Id)">Sort</button>
+                             </span>
         <ul id="@ulId">
             @if (category.HasChildren())
             {

@@ -6,14 +6,31 @@
 
 
 <h1>View</h1>
-<button id="collapse" class="btn-primary">Collapse all</button>
-<p>
-    <a asp-action="Create">Create new under Root</a>
-</p>
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Warning</h4>
+            </div>
+            <div id="modalBody" class="modal-body edit-modal-body">
+            </div>
+            @*<div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel-edit">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirm-edit">Edit</button>
+                </div>*@
+        </div>
+    </div>
+</div>
 
-<ul id="collapsibleList">
-    @await Component.InvokeAsync("CategoriesStructure", new { isFirstCall = true })
-</ul>
+<button id="collapse" class="btn-primary">Collapse all</button>
+<br />
+<li>
+    Root<span id="rootElement" class="menu"><i class="fas fa-plus"></i></span>
+    <ul id="collapsibleList">
+        @await Component.InvokeAsync("CategoriesStructure", new { isFirstCall = true })
+    </ul>
+</li>
 
 @section scripts {
     <script>
@@ -31,10 +48,12 @@
     <script>
         var listItem = $(".menu");
         var x = false;
-        listItem.click(function () {
+        listItem.click(function (e) {
             $(this).parent('li').children('.options').toggleClass("visible");
             listItem.not(this).parent('li').children('.options').removeClass("visible");
             x = !x;
+            $(this).parent().children('span').children('i').toggleClass('fa-plus');
+            $(this).parent().children('span').children('i').toggleClass('fa-minus');
 
             var listItemCurrent = $(this).parent('li').children('.menu');
             var currentMenu = $(this).parent('li').children('.options');
@@ -43,15 +62,22 @@
 
     <script type="text/javascript">
         $(document).ready(function () {
-            $('li').children('i').text("-");
+            //$('li').children('i').text("-");
+            //$('li').children('.expandable').toggleClass('fa-chevron-down');
             $('li a').on('click', function (e) {
                 if ($(e.target).parent('li').children('ul').is(':visible')) {
                     $(e.target).parent('li').children('ul').slideToggle();
-                    $(e.target).parent('li').children('i').text("+");
+                    //$(e.target).parent('li').children('i').text("+");
+                    $(e.target).parent('li').children('i').toggleClass('fa-chevron-down');
+                    $(e.target).parent('li').children('i').toggleClass('fa-chevron-right');
+
+
                 }
                 else {
                     $(e.target).parent('li').children('ul').slideToggle();
-                    $(e.target).parent('li').children('i').text("-");
+                    //$(e.target).parent('li').children('i').text("-");
+                    $(e.target).parent('li').children('i').toggleClass('fa-chevron-down');
+                    $(e.target).parent('li').children('i').toggleClass('fa-chevron-right');
                 }
                 e.stopPropagation();
             });
@@ -64,10 +90,18 @@
             $('#collapsibleList').toggleClass('closed');
 
             if ($('#collapsibleList').hasClass('closed')) {
-                $('#collapsibleList i').text('+');
+                //$('#collapsibleList .expandable').text('+');
+
+                $('#collapsibleList .expandable').toggleClass('fa-chevron-down ');
+                $('#collapsibleList .expandable').toggleClass('fa-chevron-right');
+
                 $('#collapsibleList ul').children('ul').slideToggle();
             } else {
-                $('#collapsibleList i').text('-');
+                //$('#collapsibleList .expandable').text('-');
+                $('#collapsibleList .expandable').toggleClass('fa-chevron-down');
+                $('#collapsibleList .expandable').toggleClass('fa-chevron-right');
+
+
             }
         });
     </script>
@@ -75,26 +109,19 @@
         $(document).ready(function () {
             $('.render').on('click', function (e) {
                 var unorderedList = $(e.target).parent('.options').siblings('ul');
-                unorderedList.append('<form><input id="name" type="text" name="categoryName"><input type="submit" id="btn-submit" value="Submit"></form>');
+                unorderedList.prepend('<form><input id="name" type="text" name="categoryName"><input type="submit" id="btn-submit" value="Submit"></form>');
+
                 $('#btn-submit').on('click', function (e) {
                     e.preventDefault();
                     var strId = $('#btn-submit').parent('form').parent('ul').siblings('span').children('.render').attr('id');
                     var id = parseInt(strId);
-                    //console.log(id);
                     var obj = Add(id, e);
-                    //unorderedList.append('<li class=wholeNode><a>'+obj.Name+'</a><span class="menu"> =&gt;</span><span class="options hidden">'+
-                    //             '<a href="/Categories/Create/'+obj.ID+'">Add Node</a> |'+
-                    //             '<a href="/Categories/Edit/'+obj.ID+'">Edit</a> |'+
-                    //             '<a href="/Categories/Delete/'+obj.ID+'">Delete</a>'+
-                    //             '<button type="button" class="btn btn-primary" id="btnAdd" onclick="Delete('+obj.ID+')">Delete</button>'+
-                    //             '<button type="button" class="render" id="'+obj.ID+'">Add node</button></span></li>');
                     $('form').detach();
                 })
             });
         });
-        
 
-        function Delete(ID) {            
+        function Delete(ID) {
             $.ajax({
                 url: "/Categories/Delete/" + ID,
                 type: "POST",
@@ -110,12 +137,25 @@
             });
         }
 
+        $("#rootElement").on('click', function () {
+            var rootElement = $("#rootElement");
+            var rootChildrenList = rootElement.siblings('ul');
+            rootChildrenList.prepend('<form><input id="name" type="text" name="categoryName"><input type="submit" id="btn-submit" value="Submit"></form>');
+            $('#btn-submit').on('click', function (e) {
+                e.preventDefault();
+                var strId = $('#btn-submit').parent('form').parent('ul').siblings('span').children('.render').attr('id');
+                var id = null
+                var obj = Add(id, e);
+                $('form').detach();
+            });
+        });
+
         function Add(id, event) {
             var ev = event;
-            var categoryObj = {                
-                Name: $('#name').val(),    
+            var categoryObj = {
+                Name: $('#name').val(),
                 ParentID: id,
-            };            
+            };
             $.ajax({
                 url: "/Categories/Create",
                 data: JSON.stringify(categoryObj),
@@ -124,19 +164,19 @@
                 dataType: "json",
                 success: function (data) {
                     //var unorderedList = $(target).parent('.options').siblings('ul');
-                    var parentListId = data.parentID;                                      
-                    $('#ul-'+parseInt(parentListId)).append('<li class=wholeNode><a>'+data.name+'</a><span class="menu"> =&gt;</span><span class="options hidden">'+
-                                 '<a href="/Categories/Create/'+data.id+'">Add Node</a> |'+
-                                 '<a href="/Categories/Edit/'+data.id+'">Edit</a> |'+
-                                 '<a href="/Categories/Delete/'+data.id+'">Delete</a>'+
-                                 '<button type="button" class="btn btn-primary" id="btnAdd" onclick="Delete('+data.id+')">Delete</button>'+
-                                 '<button type="button" class="render" id="'+data.id+'">Add node</button></span></li>');
+                    var parentListId = data.parentID;
+                    $('#ul-' + parseInt(parentListId)).append('<li class=wholeNode><a>' + data.name + '</a><span class="menu"> =&gt;</span><span class="options hidden">' +
+                        '<a href="/Categories/Create/' + data.id + '">Add Node</a> |' +
+                        '<a href="/Categories/Edit/' + data.id + '">Edit</a> |' +
+                        '<a href="/Categories/Delete/' + data.id + '">Delete</a>' +
+                        '<button type="button" class="btn btn-primary" id="btnAdd" onclick="Delete(' + data.id + ')">Delete</button>' +
+                        '<button type="button" class="render" id="' + data.id + '">Add node</button></span></li>');
                     console.log(data);
 
                     //loadData();
-                },                
+                },
                 error: function (data) {
-                    console.log("error"+data);
+                    console.log("error" + data);
                     //console.log(errormessage.responseText);
                 }
             });
@@ -146,8 +186,77 @@
         function Append(obj) {
             var unorderedList = $(e.target).parent('.options').siblings('ul');
             console.log(this);
-                unorderedList.append('<li class=wholeNode><a>${obj.Name}</a></li>');
+            unorderedList.append('<li class=wholeNode><a>${obj.Name}</a></li>');
         }
     </script>
 
+    <script>
+        var loadEdit = function (categoryID) {
+            $.ajax({
+                type: 'POST',
+                url: "Categories/EditPartial",
+                data: { "Id": categoryID },
+                success: function (response) {
+                    $('#modalBody').html(response);
+
+                    $('#editModal').modal('show');
+                }
+            })
+        }
+    </script>
+    <script>
+        function sortListDir(listId) {
+            var list, i, switching, b, shouldSwitch, dir, switchcount = 0;
+            list = $('#li-'+listId);
+            switching = true;
+            // Set the sorting direction to ascending:
+            dir = "asc";
+            // Make a loop that will continue until no switching has been done:
+            while (switching) {
+                // start by saying: no switching is done:
+                switching = false;
+                b = list.children('ul').children('li');
+                d = list.children('ul').children('li').children('a');
+                console.log(d);
+                // Loop through all list-items:
+                for (i = 0; i < (b.length - 1); i++) {
+                    //start by saying there should be no switching:
+                    shouldSwitch = false;
+                    /* check if the next item should switch place with the current item,
+                    based on the sorting direction (asc or desc): */
+                    if (dir == "asc") {
+                        /*if (b[i].innerHTML.toLowerCase() > b[i + 1].innerHTML.toLowerCase()) {*/
+                        if (d[i].innerHTML.toLowerCase() > d[i + 1].innerHTML.toLowerCase()) {
+                            /* if next item is alphabetically lower than current item,
+                            mark as a switch and break the loop: */
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (d[i].innerHTML.toLowerCase() < d[i + 1].innerHTML.toLowerCase()) {
+                            /* if next item is alphabetically higher than current item,
+                            mark as a switch and break the loop: */
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    /* If a switch has been marked, make the switch
+                    and mark that a switch has been done: */
+                    b[i].parentNode.insertBefore(b[i + 1], b[i]);
+                    switching = true;
+                    // Each time a switch is done, increase switchcount by 1:
+                    switchcount++;
+                } else {
+                    /* If no switching has been done AND the direction is "asc",
+                    set the direction to "desc" and run the while loop again. */
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+    </script>
 }
