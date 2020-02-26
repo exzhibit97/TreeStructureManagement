@@ -110,13 +110,14 @@
             $('.render').on('click', function (e) {
                 var unorderedList = $(e.target).parent('.options').siblings('ul');
                 unorderedList.prepend('<form><input id="name" type="text" name="categoryName"><input type="submit" id="btn-submit" value="Submit"></form>');
-
+                unorderedList.children('.errorText').detach();
                 $('#btn-submit').on('click', function (e) {
                     e.preventDefault();
                     var strId = $('#btn-submit').parent('form').parent('ul').siblings('span').children('.render').attr('id');
                     var id = parseInt(strId);
                     var obj = Add(id, e);
                     $('form').detach();
+                    
                 })
             });
         });
@@ -176,7 +177,10 @@
                     //loadData();
                 },
                 error: function (data) {
-                    console.log("error" + data);
+                    if (categoryObj.Name.length > 60) {
+                        $('#ul-' + parseInt(categoryObj.ParentID)).prepend('<span class="errorText">' + 'Name was too long!' + '</span>');
+                    }
+                    console.log("error" + JSON.stringify(data));
                     //console.log(errormessage.responseText);
                 }
             });
@@ -205,9 +209,10 @@
         }
     </script>
     <script>
+        //Courtesy of W3C
         function sortListDir(listId) {
             var list, i, switching, b, shouldSwitch, dir, switchcount = 0;
-            list = $('#li-'+listId);
+            list = $('#li-' + listId);
             switching = true;
             // Set the sorting direction to ascending:
             dir = "asc";

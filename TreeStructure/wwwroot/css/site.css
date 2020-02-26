@@ -127,3 +127,7 @@ body {
 i {
     margin-left: 10px;
 }
+
+.errorText {
+    color: red;
+}

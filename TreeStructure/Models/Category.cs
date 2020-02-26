@@ -9,9 +9,7 @@ namespace TreeStructure.Models
     public class Category
     {
         public int Id { get; set; }
-
-        //[Required]
-        //[StringLength(50)]
+        [StringLength(60, MinimumLength = 1)]
         public string Name { get; set; }
         public int? ParentID { get; set; }
         public Category Parent { get; set; }
