@@ -58,12 +58,15 @@ namespace TreeStructure.Infrastructure
 
         public void DeleteWithChildren(Category category)
         {
+            var catChildren = _context.CategoryItems.Where(c => c.ParentID == category.Id).ToList();
+            category.Children = catChildren;
             if (!category.HasChildren())
             {
                 _context.CategoryItems.Remove(category);                
             }
             else
             {
+                _context.CategoryItems.Remove(category);
                 foreach (var children in category.Children)
                 {
                     this.DeleteWithChildren(children);
@@ -80,7 +83,7 @@ namespace TreeStructure.Infrastructure
                 _context.CategoryItems.Remove(category);
             }
             else
-            {
+            {                
                 foreach (var children in catChildren)
                 {
                     children.ParentID = category.ParentID;

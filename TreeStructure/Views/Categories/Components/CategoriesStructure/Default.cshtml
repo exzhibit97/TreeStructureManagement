@@ -29,7 +29,7 @@
                                      Edit
                                  </a>
                                  <a class="btn btn-primary render" id="@category.Id"><i class="fas fa-plus"></i>Add node</a>
-                                 <button onclick="sortListDir(@category.Id)">Sort</button>
+                                 <a class="btn btn-info" onclick="sortListDir(@category.Id)"><i class="fas fa-sort"></i>Sort</a>
                              </span>
         <ul id="@ulId">
             @if (category.HasChildren())

@@ -131,3 +131,11 @@ i {
 .errorText {
     color: red;
 }
+
+.wholeNode .expandable {
+    cursor: pointer;
+}
+
+.wholeNode .menu {
+    cursor: pointer;
+}

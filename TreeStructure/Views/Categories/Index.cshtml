@@ -25,8 +25,14 @@
 
 <button id="collapse" class="btn-primary">Collapse all</button>
 <br />
-<li>
-    Root<span id="rootElement" class="menu"><i class="fas fa-plus"></i></span>
+<li id="li-0" class="wholeNode">
+    <i class="expandable fas fa-chevron-down"></i>
+    <a>Root</a><span class="menu"><i class="fas fa-plus"></i></span>
+    <span class="options hidden">
+        <a class="btn btn-primary render" id="ul-0"><i class="fas fa-plus"></i>Add node</a>
+        <a class="btn btn-info" onclick="sortListDir(0)"><i class="fas fa-sort"></i>Sort</a>
+
+    </span>
     <ul id="collapsibleList">
         @await Component.InvokeAsync("CategoriesStructure", new { isFirstCall = true })
     </ul>
@@ -64,7 +70,7 @@
         $(document).ready(function () {
             //$('li').children('i').text("-");
             //$('li').children('.expandable').toggleClass('fa-chevron-down');
-            $('li a').on('click', function (e) {
+            $('li .expandable').on('click', function (e) {
                 if ($(e.target).parent('li').children('ul').is(':visible')) {
                     $(e.target).parent('li').children('ul').slideToggle();
                     //$(e.target).parent('li').children('i').text("+");
@@ -117,7 +123,7 @@
                     var id = parseInt(strId);
                     var obj = Add(id, e);
                     $('form').detach();
-                    
+
                 })
             });
         });
@@ -165,13 +171,27 @@
                 dataType: "json",
                 success: function (data) {
                     //var unorderedList = $(target).parent('.options').siblings('ul');
-                    var parentListId = data.parentID;
-                    $('#ul-' + parseInt(parentListId)).append('<li class=wholeNode><a>' + data.name + '</a><span class="menu"> =&gt;</span><span class="options hidden">' +
-                        '<a href="/Categories/Create/' + data.id + '">Add Node</a> |' +
-                        '<a href="/Categories/Edit/' + data.id + '">Edit</a> |' +
-                        '<a href="/Categories/Delete/' + data.id + '">Delete</a>' +
-                        '<button type="button" class="btn btn-primary" id="btnAdd" onclick="Delete(' + data.id + ')">Delete</button>' +
-                        '<button type="button" class="render" id="' + data.id + '">Add node</button></span></li>');
+                    if (data.parentID == null) {
+                        $('#ul-' + '0').append('<li id=' + data.id + ' class=wholeNode' + '<a>' + data.name + '</a><span class="menu"><i class="fas fa-plus"></i></span>' +
+                            '<span class="options hidden"><a class="btn btn-danger delete" data-id="' + data.id + '"data-controller="Categories" data-action="Delete" data-body-message="Are you sure to delete this node?"> <i class="fas fa-trash alt"></i>Delete</a>' +
+                            '<a class="btn btn-secondary edit" data-id="' + data.id + '" data-controller="Categories" data-action="Edit" onclick="loadEdit(' + data.id + ')" data-body-message="Are you sure to edit this node?"><i class="fas fa-edit"></i>Edit</a>' +
+                            '<a class="btn btn-primary render" id="' + data.id + '"><i class="fas fa-plus"></i>Add node</a>' +
+                            '<a class="btn btn-info" onclick="sortListDir(' + data.id + ')"><i class="fas fa-sort"></i>Sort</a></span>');
+                    } else {
+                        var parentListId = data.parentID;
+                        //$('#ul-' + parseInt(parentListId)).append('<li class=wholeNode><a>' + data.name + '</a><span class="menu"> =&gt;</span><span class="options hidden">' +
+                        //    '<a href="/Categories/Create/' + data.id + '">Add Node</a> |' +
+                        //    '<a href="/Categories/Edit/' + data.id + '">Edit</a> |' +
+                        //    '<a href="/Categories/Delete/' + data.id + '">Delete</a>' +
+                        //    '<button type="button" class="btn btn-primary" id="btnAdd" onclick="Delete(' + data.id + ')">Delete</button>' +
+                        //    '<button type="button" class="render" id="' + data.id + '">Add node</button></span></li>');
+                        $('#ul-' + parseInt(parentListId)).append('<li id=' + data.id + ' class=wholeNode' + '<a>' + data.name + '</a><span class="menu"><i class="fas fa-plus"></i></span>' +
+                            '<span class="options hidden"><a class="btn btn-danger delete" data-id="' + data.id + '"data-controller="Categories" data-action="Delete" data-body-message="Are you sure to delete this node?"> <i class="fas fa-trash alt"></i>Delete</a>' +
+                            '<a class="btn btn-secondary edit" data-id="' + data.id + '" data-controller="Categories" data-action="Edit" onclick="loadEdit(' + data.id + ')" data-body-message="Are you sure to edit this node?"><i class="fas fa-edit"></i>Edit</a>' +
+                            '<a class="btn btn-primary render" id="' + data.id + '"><i class="fas fa-plus"></i>Add node</a>' +
+                            '<a class="btn btn-info" onclick="sortListDir(' + data.id + ')"><i class="fas fa-sort"></i>Sort</a></span>');
+
+                    }
                     console.log(data);
 
                     //loadData();
